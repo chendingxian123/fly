@@ -1,0 +1,20 @@
+(function(fly){
+ var Land=function(obj){
+  this.img=obj.land;
+  this.ctx=obj.ctx;
+  this.Lwidth=this.img.width;
+  this.Lheight=this.img.height;
+  this.Ly=obj.y;
+  this.speed=-1;
+ };
+ Land.prototype={
+ 	constructor:Land,
+ 	draw:function(){
+ 		if(this.Ly<=-this.Lwidth){
+ 			this.Ly=this.Lwidth*3;
+ 		}
+        this.ctx.drawImage(this.img,this.Ly+=this.speed,cv.height-this.Lheight,this.Lwidth,this.Lheight)
+ 	}
+ }
+ fly.Land=Land;
+})(fly)
