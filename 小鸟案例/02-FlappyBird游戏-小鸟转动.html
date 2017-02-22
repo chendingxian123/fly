@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		canvas {
+			border: 1px solid red;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="cv" width="800" height="600"></canvas>
+  <script src="JS/fly.js"></script>
+  <script src="JS/birds.js"></script>
+  <script src="JS/sky.js"></script>
+  <script src="JS/land.js"></script>
+  <script src="JS/pipe.js"></script>
+
+	<script type="text/javascript">
+		var cv = document.querySelector('#cv');
+		var ctx = cv.getContext('2d');
+    var rot=[];
+    var flag=true;
+
+		
+	// 所有的图片资源
+  var imgSrc = ['birds', 'land', 'sky', 'pipe1', 'pipe2'];
+
+  // 作用：加载游戏图片资源
+
+
+  // 使用：
+
+
+  fly.loadImages(imgSrc, function( imgList ) {
+
+  	// S = v * t + 1/2 * a * t * t
+  	// v = v0 + a * t
+    // 生成小鸟对象 
+    var Birds=new fly.Birds({
+      birds:imgList["birds"],
+      ctx:ctx
+    });
+
+
+    // 生成天空对象
+    for(var i=0;i<2;i++){
+      var sky=new fly.Sky({
+      sky:imgList["sky"],
+      ctx:ctx,
+      y:imgList["sky"].width*i
+    })
+      rot.push(sky);
+  }
+  // 生成管道对象
+  console.log(fly.Pipe)
+    for(var i=0;i<6;i++){
+      var pipe=new fly.Pipe({
+        PipeT:imgList["pipe2"],
+        PipeB:imgList["pipe1"],
+        ctx:ctx,
+        x:imgList["pipe1"].width*i*3+400
+      });
+      rot.push(pipe)
+    }
+      // 生成陆地对象
+        for(var i=0;i<4;i++){
+      var land=new fly.Land({
+        land:imgList["land"],
+         ctx:ctx,
+         y:imgList["land"].width*i
+      })
+        rot.push(land);
+    }
+
+
+    // 根据当前小鸟的速度实现小鸟的转动
+    // 速度越大，旋转角度越大
+    // 为了防止小鸟旋转次数太多，所以，我们设定一个最大旋转角度
+
+    // 思考：速度为 0.1 的时候，当前角度为多少：  
+    //  45 * (0.1 / 0.3) = 15
+    //  旋转角度公式: 当前速度 / maxSpeed * maxAngle
+    
+    // 当前速度对应的角度
+
+
+  	var lastFrameTime = new Date();
+
+  	var render = function() {
+  		var curFrameTime = new Date();
+  		var delta = curFrameTime - lastFrameTime;
+  		lastFrameTime = curFrameTime;
+      ctx.beginPath();
+  		ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.save();
+      // 绘制
+      rot.forEach(function(value){
+         value.draw();
+
+      })
+
+
+    
+
+      // 超过最大值的处理:
+      // 绘制小鸟
+      Birds.draw(delta);
+      // 绘制小鸟结束
+     
+     if(Birds.y<=0){
+      flag=false;
+     }
+     if(Birds.y>=cv.height-imgList["land"].height){
+      flag=false;
+     }
+     if(ctx.isPointInPath(100, Birds.y)){
+      flag=false;
+     }
+
+      ctx.restore();
+     if(flag){
+      window.requestAnimationFrame( render );
+     }
+  		
+  	};
+
+  	window.requestAnimationFrame( render );
+
+  	// 绑定单击事件
+  	cv.addEventListener('click', function() {
+  		Birds.speed = -0.3;
+  	});
+  });
+	</script>
+</body>
+<
